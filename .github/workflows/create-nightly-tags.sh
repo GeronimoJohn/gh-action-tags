@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-# Function to create tag for a branch
 create_tag_for_branch() {
     local branch_type=$1
     local branch_name=$2
@@ -21,13 +20,11 @@ create_tag_for_branch() {
     fi
 }
 
-# Tag develop branch
-create_tag_for_branch "dev" "develop"
+# Get all RC branches
+RC_BRANCHES=$(git branch -r | grep -E 'v[0-9.]+-(R|r)(C|c)' | sed 's/.*origin\///')
 
-# Tag latest RC branch
-LATEST_RC=$(git branch -r | grep -E 'v[0-9.]+-(R|r)(C|c)' | sed 's/origin\///' | sort -V | tail -1 | xargs)
-if [[ -n "$LATEST_RC" ]]; then
-    create_tag_for_branch "rc" "$LATEST_RC"
-else
-    echo "No RC branches found"
-fi
+# Process all RC branches and develop
+for BRANCH in $RC_BRANCHES 'develop'; do
+    echo "Processing branch: $BRANCH"
+    # create_tag_for_branch "$BRANCH"
+done
