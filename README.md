@@ -1,3 +1,3 @@
 # gh-action-tags
 
-Should generate new tags for us
+A test environment to see if a script for generating tags can run on a cron event
