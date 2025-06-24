@@ -1,6 +1,7 @@
 on:
   schedule:
-    - cron: "20 1 * * *" # Testing - equivalent to 12:38 NZDT
+    - cron: "*/5 * * * *" # Testing
+  workflow_dispatch:
 
 name: Nightly Automated Builds
 
