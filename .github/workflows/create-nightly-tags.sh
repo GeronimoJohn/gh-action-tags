@@ -12,8 +12,8 @@ create_tag_for_branch() {
     if [[ -n "$PKG_VERSION" && -n "$COMMIT_DATE" ]]; then
         TAG_NAME="v$PKG_VERSION-$COMMIT_DATE"
         echo "Creating tag for $branch_name: $TAG_NAME"
-        git tag "$TAG_NAME"
-        git push origin "$TAG_NAME"
+        # git tag "$TAG_NAME"
+        # git push origin "$TAG_NAME"
     else
         echo "Failed to generate tag for $branch_name (PKG_VERSION: '$PKG_VERSION', COMMIT_DATE: '$COMMIT_DATE')"
     fi
