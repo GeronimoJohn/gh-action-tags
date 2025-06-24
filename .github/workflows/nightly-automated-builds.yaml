@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "30 0 * * *" # Testing - equivalent to 12:30 NZDT
+    - cron: "33 12 * * *" # Testing - equivalent to 12:30 NZDT
   workflow_dispatch: # Allows manual triggering of the workflow
 
 name: Nightly Automated Builds
