@@ -1,8 +1,8 @@
 name: Nightly Automated Builds
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: "*/10 * * * *" # should run every 10 minutes
+  schedule:
+    - cron: "*/15 * * * *" # should run every 15 minutes
 
 jobs:
   create-tags:
@@ -24,3 +24,21 @@ jobs:
         run: |
           chmod +x .github/workflows/create-nightly-tags.sh
           .github/workflows/create-nightly-tags.sh
+
+  send-notifications:
+    needs: create-tags
+    if: needs.create-tags.outputs.tags_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Send telegram notifications
+        env:
+          TELEGRAM_RELEASE_BOT_KEY: ${{ secrets.TELEGRAM_RELEASE_BOT_KEY }}
+          TELEGRAM_DEV_RELEASE_CHAT_ID: ${{ secrets.TELEGRAM_DEV_RELEASE_CHAT_ID }}
+          TELEGRAM_RC_RELEASE_CHAT_ID: ${{ secrets.TELEGRAM_RC_RELEASE_CHAT_ID }}
+          CREATED_TAGS: ${{ needs.create-tags.outputs.created_tags }}
+          AFFECTED_BRANCHES: ${{ needs.create-tags.outputs.affected_branches }}
+        run: |
+          chmod +x .github/workflows/send-telegram-notifications.sh
+          .github/workflows/send-telegram-notifications.sh
