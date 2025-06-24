@@ -6,14 +6,14 @@ create_tag_for_branch() {
     
     git checkout "$branch_name"
     
-    PKG_VERSION=$(cat ./package.json | grep 'version":' | sed 's/[^0-9.]//g')
+    PKG_VERSION=$(cat ./package.json | grep 'version":' | sed 's/.*"version": *"\([^"]*\)".*/\1/')
     COMMIT_DATE=$(git log -1 --format=%cd --date=format:%m%d%H%M)
     
     if [[ -n "$PKG_VERSION" && -n "$COMMIT_DATE" ]]; then
-        TAG_NAME="v$PKG_VERSION-$COMMIT_DATE"
+        TAG_NAME="$PKG_VERSION-$COMMIT_DATE"
         echo "Creating tag for $branch_name: $TAG_NAME"
-        # git tag "$TAG_NAME"
-        # git push origin "$TAG_NAME"
+        git tag "$TAG_NAME"
+        git push origin "$TAG_NAME"
     else
         echo "Failed to generate tag for $branch_name (PKG_VERSION: '$PKG_VERSION', COMMIT_DATE: '$COMMIT_DATE')"
     fi
