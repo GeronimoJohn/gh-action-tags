@@ -6,7 +6,7 @@ create_tag_for_branch() {
     
     git checkout "$branch_name"
     
-    PKG_VERSION=$(cat ./package.json | grep '"version":' | sed 's/[^0-9.]//g')
+    PKG_VERSION=$(cat ./package.json | grep 'version":' | sed 's/[^0-9.]//g')
     COMMIT_DATE=$(git log -1 --format=%cd --date=format:%m%d%H%M)
     
     if [[ -n "$PKG_VERSION" && -n "$COMMIT_DATE" ]]; then
