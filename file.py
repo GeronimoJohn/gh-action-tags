@@ -1,13 +1,10 @@
-#!/bin/bash
-set -e
-
+# makes it easier to read the code
 python3 <<'EOF'
 import os
 import sys
 import re
 import requests
 
-# -- Scripts to send Telegram notifications based on build status or tag creation -- #
 def send_telegram_notification(chat_id, message, bot_key): 
     url = f"https://api.telegram.org/bot{bot_key}/sendMessage"
     payload = { 
@@ -25,7 +22,6 @@ def send_telegram_notification(chat_id, message, bot_key):
         print(f"❌ Failed to send message to chat {chat_id}: {e}")
         return False
 
-# -- Determines which channel to use based on tag pattern -- #
 def get_channel_for_tag(tag):
     """Determine which channel to use based on tag pattern"""
     dev_chat_id = os.getenv("TELEGRAM_DEV_RELEASE_CHAT_ID")
@@ -37,7 +33,6 @@ def get_channel_for_tag(tag):
     else:
         return dev_chat_id, "Development"
 
-# -- Handles Android build notifications -- #
 def handle_android_build_notification():
     """Handle notifications for Android build completion"""
     bot_key = os.getenv("TELEGRAM_RELEASE_BOT_KEY")
@@ -77,7 +72,7 @@ def handle_android_build_notification():
     if send_telegram_notification(chat_id, message, bot_key):
         print(f"✅ Android build notification sent to {channel_type} chat {chat_id}")
 
-# -- Handles tag creation notifications -- #
+
 def handle_tag_notification():
     bot_key = os.getenv("TELEGRAM_RELEASE_BOT_KEY")
     dev_chat_id = os.getenv("TELEGRAM_DEV_RELEASE_CHAT_ID")
