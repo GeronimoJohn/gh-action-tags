@@ -15,10 +15,6 @@ def send_telegram_notification(chat_id, message, bot_key):
         "parse_mode": "MarkdownV2",
     }
 
-    print(f"🔍 Sending to chat: {chat_id}")
-    print(f"🔍 Bot token starts with: {bot_key[:10]}...")
-    print(f"🔍 URL: {url}")
-
     try: 
         response = requests.post(url, data=payload)
         response.raise_for_status()
