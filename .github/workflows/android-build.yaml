@@ -1,0 +1,42 @@
+name: Android Build Simulation
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Simulate Android Build
+        run: |
+          # In production, this would be your actual Android build steps
+          echo "🏗️ Starting Android build for tag: ${{ github.ref_name }}"
+
+          # Simulate build time
+          sleep 5
+
+          # Simulate occasional failure (20% chance for testing)
+          if [ $((RANDOM % 5)) -eq 0 ]; then
+            echo "❌ Simulated build failure"
+            exit 1
+          fi
+
+          echo "✅ Android build completed successfully"
+
+      - name: Send build completion notification
+        if: always()
+        env:
+          TELEGRAM_RELEASE_BOT_KEY: ${{ secrets.TELEGRAM_RELEASE_BOT_KEY }}
+          TELEGRAM_DEV_RELEASE_CHAT_ID: ${{ secrets.TELEGRAM_DEV_RELEASE_CHAT_ID }}
+          TELEGRAM_RC_RELEASE_CHAT_ID: ${{ secrets.TELEGRAM_RC_RELEASE_CHAT_ID }}
+          NOTIFICATION_TYPE: "android_build"
+          BUILD_STATUS: ${{ job.status }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          chmod +x .github/workflows/send-telegram-notification.sh
+          .github/workflows/send-telegram-notification.sh
