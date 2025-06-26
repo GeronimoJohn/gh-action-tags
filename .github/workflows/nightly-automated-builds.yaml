@@ -2,7 +2,7 @@ name: Nightly Automated Builds
 on:
   workflow_dispatch:
   schedule:
-    - cron: "50 1 * * *" # should run every 20 minutes
+    - cron: "*/20 * * * *" # should run every 20 minutes
 
 jobs:
   create-tags:
