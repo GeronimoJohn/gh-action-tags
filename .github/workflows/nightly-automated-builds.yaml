@@ -1,8 +1,8 @@
 name: Nightly Automated Builds
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: "*/20 * * * *" # should run every 20 minutes
+  schedule:
+    - cron: "*/20 * * * *" # should run every 20 minutes
 
 jobs:
   create-tags:
@@ -45,5 +45,4 @@ jobs:
           CREATED_TAGS: ${{ needs.create-tags.outputs.CREATED_TAGS }}
           AFFECTED_BRANCHES: ${{ needs.create-tags.outputs.AFFECTED_BRANCHES }}
         run: |
-          chmod +x .github/workflows/send-telegram-notification.sh
-          .github/workflows/send-telegram-notification.sh
+          bash .github/workflows/create-nightly-tags.sh
