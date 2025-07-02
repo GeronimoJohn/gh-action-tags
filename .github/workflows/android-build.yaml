@@ -37,5 +37,4 @@ jobs:
           NOTIFICATION_TYPE: "android_build"
           BUILD_STATUS: ${{ job.status }}
           TAG_NAME: ${{ github.ref_name }}
-        run: |
-          bash .github/workflows/send-telegram-notification.sh
+        run: bash .github/workflows/send-telegram-notification.sh
