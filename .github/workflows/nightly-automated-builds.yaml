@@ -27,8 +27,7 @@ jobs:
       - name: Create tags for target branches
         id: create_tags
         run: |
-          chmod +x .github/workflows/create-nightly-tags.sh
-          .github/workflows/create-nightly-tags.sh
+          bash .github/workflows/create-nightly-tags.sh
 
   send-notifications:
     needs: create-tags
@@ -45,4 +44,4 @@ jobs:
           CREATED_TAGS: ${{ needs.create-tags.outputs.CREATED_TAGS }}
           AFFECTED_BRANCHES: ${{ needs.create-tags.outputs.AFFECTED_BRANCHES }}
         run: |
-          bash .github/workflows/create-nightly-tags.sh
+          bash .github/workflows/send-telegram-notification.sh

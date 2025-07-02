@@ -13,7 +13,11 @@ create_tag_for_branch() {
     COMMIT_DATE=$(git log -1 --format=%cd --date=format:%m%d%H%M)
     
     if [[ -n "$PKG_VERSION" && -n "$COMMIT_DATE" ]]; then
-        TAG_NAME="$PKG_VERSION-$COMMIT_DATE"
+        if [[ "$PKG_VERSION" == v* ]]; then
+            TAG_NAME="$PKG_VERSION-$COMMIT_DATE"
+        else
+            TAG_NAME="v$PKG_VERSION-$COMMIT_DATE"
+        fi
 
         if git ls-remote --tags origin | grep -q "refs/tags/${TAG_NAME}$"; then
             echo "Tag $TAG_NAME already exists for branch $branch_name (version: $PKG_VERSION, latest commit date: $COMMIT_DATE), skipping..."
