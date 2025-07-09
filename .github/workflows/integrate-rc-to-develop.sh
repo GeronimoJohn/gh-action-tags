@@ -13,11 +13,10 @@ create_merge_branch() {
     local RC_BRANCH=$1
     local MERGE_BRANCH=$2
     
-    echo "Creating new merge branch: $MERGE_BRANCH"
+    echo "Creating new merge branch: $MERGE_BRANCH from $RC_BRANCH"
     git fetch origin
-    git checkout "origin/develop"
+    git checkout "origin/$RC_BRANCH"
     git checkout -b "$MERGE_BRANCH"
-    git merge "origin/$RC_BRANCH" --no-ff -m "Merge $RC_BRANCH into develop - fresh commit on $TODAY"
     git push -u origin "$MERGE_BRANCH"
     echo "Created merge branch $MERGE_BRANCH"
 }
@@ -29,11 +28,12 @@ create_pull_request() {
     local pr_title="MERGE $RC_BRANCH to develop - fresh commit on $TODAY"
     local pr_body="**Details:**
     - Fresh commit detected on: $DATE_DISPLAY
-    - RC Branch: $RC_BRANCH
+    - Source: This branch is based on $RC_BRANCH
 
-    This PR was created automatically by the daily RC integration workflow."
+    This PR was created automatically by the daily RC integration workflow.
+    ⚠️ **Note**: Any merge conflicts will be visible in this PR and need manual resolution."
 
-    echo "Creating pull request for $MERGE_BRANCH"
+    echo "Creating pull request for $MERGE_BRANCH -> develop"
     
     if gh pr create \
         --title "$pr_title" \
