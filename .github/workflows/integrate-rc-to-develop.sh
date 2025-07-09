@@ -69,13 +69,14 @@ for RC_BRANCH in $RC_BRANCHES; do
 
     echo "Found fresh commit on $RC_BRANCH"
 
-    MERGE_BRANCH="merge-${RC_BRANCH}-to-develop-${TODAY}"
-    EXISTING_PR=$(gh pr list --base develop --head "$MERGE_BRANCH" --json number --jq '.[0].number' 2>/dev/null || echo "")
-
-    if branch_exists "$MERGE_BRANCH" && [[ -n "$EXISTING_PR" ]]; then
-        echo "Both merge branch and PR already exist for $RC_BRANCH (PR #$EXISTING_PR), skipping"
+    EXISTING_OPEN_PR=$(gh pr list --base develop --state open --json headRefName,number --jq ".[] | select(.headRefName | startswith(\"merge-${RC_BRANCH}-to-develop-\")) | .number" 2>/dev/null | head -1 || echo "")
+    
+    if [[ -n "$EXISTING_OPEN_PR" ]]; then
+        echo "Open PR already exists for $RC_BRANCH (PR #$EXISTING_OPEN_PR), skipping"
         continue
     fi
+    
+    MERGE_BRANCH="merge-${RC_BRANCH}-to-develop-${TODAY}"
 
     if branch_exists "$MERGE_BRANCH" && [[ -z "$EXISTING_PR" ]]; then
         echo "Merge branch $MERGE_BRANCH already exists, but no PR found. Will create PR."
