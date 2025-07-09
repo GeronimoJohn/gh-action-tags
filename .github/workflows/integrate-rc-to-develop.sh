@@ -30,9 +30,8 @@ create_pull_request() {
     - Fresh commit detected on: $DATE_DISPLAY
     - Source: This branch is based on $RC_BRANCH
 
-    This PR was created automatically by the daily RC integration workflow.
-    
-    ⚠️ **Note**: Any merge conflicts will be visible in this PR and need manual resolution."
+This PR was created automatically by the daily RC integration workflow.
+⚠️ **Note**: Any merge conflicts will be visible in this PR and need manual resolution."
 
     echo "Creating pull request for $MERGE_BRANCH -> develop"
     
