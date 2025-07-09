@@ -2,8 +2,8 @@ name: RC to Develop Integration
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/15 * * * *" # should run every 20 minutes
+  # schedule:
+  #   - cron: "*/15 * * * *" # should run every 20 minutes
 
 jobs:
   integrate-rc-to-develop:
