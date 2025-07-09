@@ -69,7 +69,7 @@ for RC_BRANCH in $RC_BRANCHES; do
 
     echo "Found fresh commit on $RC_BRANCH"
 
-    MERGE_BRANCH="merge-${BRANCH}-to-develop-${TODAY}"
+    MERGE_BRANCH="merge-${RC_BRANCH}-to-develop-${TODAY}"
     EXISTING_PR=$(gh pr list --base develop --head "$MERGE_BRANCH" --json number --jq '.[0].number' 2>/dev/null || echo "")
 
     if branch_exists "$MERGE_BRANCH" && [[ -n "$EXISTING_PR" ]]; then
