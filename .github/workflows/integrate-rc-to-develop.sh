@@ -1,0 +1,89 @@
+#!/bin/bash
+set -euo pipefail
+
+readonly TODAY=$(date +%m%d)
+readonly DATE_DISPLAY=$(date +%Y-%m-%d)
+
+branch_exists() {
+    local branch=$1
+    git show-ref --verify --quiet "refs/remotes/origin/$branch"
+}
+
+create_merge_branch() {
+    local RC_BRANCH=$1
+    local MERGE_BRANCH=$2
+    
+    echo "Creating new merge branch: $MERGE_BRANCH"
+    git fetch origin
+    git checkout "origin/develop"
+    git checkout -b "$MERGE_BRANCH"
+    git merge "origin/$RC_BRANCH" --no-ff -m "Merge $RC_BRANCH into develop - fresh commit on $TODAY"
+    git push -u origin "$MERGE_BRANCH"
+    echo "Created merge branch $MERGE_BRANCH"
+}
+
+create_pull_request() {
+    local RC_BRANCH=$1
+    local MERGE_BRANCH=$2
+    
+    local pr_title="MERGE $RC_BRANCH to develop - fresh commit on $TODAY"
+    local pr_body="**Details:**
+    - Fresh commit detected on: $DATE_DISPLAY
+    - RC Branch: $RC_BRANCH
+
+    This PR was created automatically by the daily RC integration workflow."
+
+    echo "Creating pull request for $MERGE_BRANCH"
+    
+    if gh pr create \
+        --title "$pr_title" \
+        --body "$pr_body" \
+        --base develop \
+        --head "$MERGE_BRANCH"; then
+        echo "PR created successfully for $MERGE_BRANCH"
+    else
+        echo "ERROR: Failed to create PR for $MERGE_BRANCH"
+        return 1
+    fi
+}
+
+# Main execution
+echo "Checking RC branches for fresh commits on $DATE_DISPLAY"
+
+RC_BRANCHES=$(git branch -r | grep -E 'origin/v[0-9.]+-(R|r)(C|c)' | sed 's|.*origin/||')
+
+if [[ -z "$RC_BRANCHES" ]]; then
+    echo "No RC branches found"
+    exit 0
+fi
+
+for RC_BRANCH in $RC_BRANCHES; do 
+    echo "Checking branch: $RC_BRANCH"
+
+    COMMIT_DATE=$(git log -1 --format=%cd --date=format:%m%d "origin/$RC_BRANCH" 2>/dev/null || echo "")
+    
+    if [[ "$COMMIT_DATE" != "$TODAY" ]]; then
+        echo "No fresh commit found on $RC_BRANCH (commit date: $COMMIT_DATE)"
+        continue
+    fi
+
+    echo "Found fresh commit on $RC_BRANCH"
+
+    MERGE_BRANCH="merge-${BRANCH}-to-develop-${TODAY}"
+    EXISTING_PR=$(gh pr list --base develop --head "$MERGE_BRANCH" --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+    if branch_exists "$MERGE_BRANCH" && [[ -n "$EXISTING_PR" ]]; then
+        echo "Both merge branch and PR already exist for $RC_BRANCH (PR #$EXISTING_PR), skipping"
+        continue
+    fi
+
+    if branch_exists "$MERGE_BRANCH" && [[ -z "$EXISTING_PR" ]]; then
+        echo "Merge branch $MERGE_BRANCH already exists, but no PR found. Will create PR."
+    else
+        create_merge_branch "$RC_BRANCH" "$MERGE_BRANCH"
+    fi
+
+    create_pull_request "$RC_BRANCH" "$MERGE_BRANCH"
+done
+
+echo "RC integration check completed"

@@ -1,0 +1,22 @@
+name: RC to Develop Integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *" # should run every 20 minutes
+
+jobs:
+  integrate-rc-to-develop:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Integrate RC to Develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/workflows/integrate-rc-to-develop.sh
