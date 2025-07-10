@@ -29,8 +29,8 @@ update_version_number() {
         return 1
     fi
 
-    if [[ "$PKG_VERSION" =~ -[Rr][Cc][0-9]*$ ]]; then
-        PKG_VERSION="${PKG_VERSION%-[Rr][Cc][0-9]*}"
+    if [[ "$PKG_VERSION" =~ -[Rr][Cc](-.*)?$ ]]; then
+        PKG_VERSION="${PKG_VERSION%-[Rr][Cc]*}"
         echo "Updated version number to $PKG_VERSION (removed RC part)"
     else
         echo "No RC part found in version number: $PKG_VERSION"
